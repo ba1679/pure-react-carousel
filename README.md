@@ -6,7 +6,7 @@ This carousel component was built using React and Vite, designed to support desk
 
 ## How to Use
 
-### Clone the Project Locally
+### Clone the Project Locally or Simply press the dot (.) key on your keyboard while on the GitHub repository page to open CodeSpaces.
 
 Clone the project to your local machine using the following command:
 
