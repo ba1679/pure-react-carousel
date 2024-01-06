@@ -8,45 +8,19 @@ import img5 from './assets/images/img_5.webp';
 import styles from './index.module.css';
 
 export default function App() {
-  const caroselItems = [
-    {
-      img: img1,
-      title: 'TITLE 1',
-      description: 'paragraph 1',
-    },
-    {
-      img: img2,
-      title: 'TITLE 2',
-      description: 'paragraph 2',
-    },
-    {
-      img: img3,
-      title: 'TITLE 3',
-      description: 'paragraph 3',
-    },
-    {
-      img: img4,
-      title: 'TITLE 4',
-      description: 'paragraph 4',
-    },
-    {
-      img: img5,
-      title: 'TITLE 5',
-      description: 'paragraph 5',
-    },
-  ];
+  const caroselImgs = [img1, img2, img3, img4, img5];
   return (
-    <Carousel>
-      {caroselItems.map((item, index) => (
+    <Carousel arrow autoPlay>
+      {caroselImgs.map((img, index) => (
         <div
           className={styles.caroselItems}
           key={`slides-${index}`}
           style={{
-            backgroundImage: `url(${item.img})`,
+            backgroundImage: `url(${img})`,
           }}>
           <div className={styles.slideContent}>
-            <h2 className={styles.title}>{item.title}</h2>
-            <p className={styles.description}>{item.description}</p>
+            <h2 className={styles.title}>{`我是湯圓 - ${index + 1}`}</h2>
+            <p className={styles.description}>{`湯圓好可愛 - ${index + 1}`}</p>
           </div>
         </div>
       ))}

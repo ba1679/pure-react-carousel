@@ -4,7 +4,19 @@ import classNames from 'classnames';
 
 import styles from './index.module.css';
 
-function Carousel({ children }) {
+function ArrowBtn({ onClick, direction = 'left' }) {
+  return (
+    <button
+      className={classNames(styles.arrowBtn, {
+        [styles.right]: direction !== 'left',
+      })}
+      onClick={onClick}>
+      {direction === 'left' ? '<' : '>'}
+    </button>
+  );
+}
+
+function Carousel({ children, autoPlay = false, arrow = false }) {
   const [translateX, setTranslateX] = useState(
     window.innerWidth < 768 ? window.innerWidth : 500
   );
@@ -135,6 +147,7 @@ function Carousel({ children }) {
 
   // for autoplay
   useEffect(() => {
+    if (!autoPlay) return;
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
@@ -146,10 +159,16 @@ function Carousel({ children }) {
         clearInterval(intervalRef.current);
       }
     };
-  }, [actionHandler]);
+  }, [actionHandler, autoPlay]);
 
   return (
-    <div className={styles.slideContainer}>
+    <div className={styles.slideContainer} style={{ position: 'relative' }}>
+      {arrow && (
+        <>
+          <ArrowBtn onClick={() => actionHandler('pre')} />
+          <ArrowBtn onClick={() => actionHandler('next')} direction='right' />
+        </>
+      )}
       <div
         ref={containerRef}
         className={styles.childrenContainer}
@@ -183,6 +202,13 @@ function Carousel({ children }) {
 
 Carousel.propTypes = {
   children: PropTypes.arrayOf(PropTypes.element).isRequired,
+  autoPlay: PropTypes.bool,
+  arrow: PropTypes.bool,
+};
+
+ArrowBtn.propTypes = {
+  onClick: PropTypes.func.isRequired,
+  direction: PropTypes.string,
 };
 
 export default Carousel;
