@@ -1,35 +1,55 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import Carousel from './Carousel';
+import img1 from './assets/images/img_1.webp';
+import img2 from './assets/images/img_2.webp';
+import img3 from './assets/images/img_3.webp';
+import img4 from './assets/images/img_4.webp';
+import img5 from './assets/images/img_5.webp';
 
-function App() {
-  const [count, setCount] = useState(0)
+import styles from './index.module.css';
 
+export default function App() {
+  const caroselItems = [
+    {
+      img: img1,
+      title: 'TITLE 1',
+      description: 'paragraph 1',
+    },
+    {
+      img: img2,
+      title: 'TITLE 2',
+      description: 'paragraph 2',
+    },
+    {
+      img: img3,
+      title: 'TITLE 3',
+      description: 'paragraph 3',
+    },
+    {
+      img: img4,
+      title: 'TITLE 4',
+      description: 'paragraph 4',
+    },
+    {
+      img: img5,
+      title: 'TITLE 5',
+      description: 'paragraph 5',
+    },
+  ];
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Carousel>
+      {caroselItems.map((item, index) => (
+        <div
+          className={styles.caroselItems}
+          key={`slides-${index}`}
+          style={{
+            backgroundImage: `url(${item.img})`,
+          }}>
+          <div className={styles.slideContent}>
+            <h2 className={styles.title}>{item.title}</h2>
+            <p className={styles.description}>{item.description}</p>
+          </div>
+        </div>
+      ))}
+    </Carousel>
+  );
 }
-
-export default App

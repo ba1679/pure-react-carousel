@@ -1,0 +1,86 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.slideContainer {
+  max-width: 500px;
+  margin: 0 auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  @media (max-width: 500px) {
+    max-width: 100vw;
+    height: 100vh
+  }
+}
+
+.childrenContainer {
+  max-width: 100%;
+  display: flex;
+  flex: 1;
+  transition-property: transform;
+  cursor: grab;
+}
+
+.caroselItems {
+  position: relative;
+  min-width: 500px;
+  height: 500px;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+
+  @media (max-width: 500px) {
+    min-width: 100vw;
+    height: 100%;
+  }
+}
+
+.slideContent {
+  margin-top: auto;
+  color: #FFFFFF;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.dotContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 8px 0;
+  z-index: 1;
+  background-color: #000000;
+
+  @media (min-height: 667px) {
+    padding: 16px 0;
+  }
+
+  @media (min-height: 812px) {
+    padding: 24px 0;
+  }
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  transition: all 0.3s;
+  opacity: 0.3;
+
+  &:not(:last-child) {
+    margin-right: 6px;
+  }
+
+  &.active {
+    width: 14px;
+    border-radius: 10px;
+    opacity: 1;
+  }
+}
+
