@@ -68,6 +68,7 @@ function Carousel({ children, autoPlay = false, arrow = false }) {
           });
         }
       }
+      isDragging.current = false;
     },
     [state, children]
   );
@@ -107,6 +108,7 @@ function Carousel({ children, autoPlay = false, arrow = false }) {
         type: 'UPDATE_TRANSLATE_X',
         payload: containerRef.current.clientWidth * state.current,
       });
+      isDragging.current = false;
       return;
     }
 
@@ -115,7 +117,6 @@ function Carousel({ children, autoPlay = false, arrow = false }) {
     } else if (startX.current < endX.current) {
       actionHandler('pre');
     }
-    isDragging.current = false;
     containerRef.current.style.cursor = 'grab';
   };
 
