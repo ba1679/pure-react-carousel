@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
-import { useState, useRef, useEffect, useCallback, Fragment } from 'react';
+import { useRef, useEffect, useCallback, useReducer, Fragment } from 'react';
 import classNames from 'classnames';
+import { carouselReducer } from './reducer';
 
 import styles from './index.module.css';
 
@@ -15,53 +16,60 @@ function ArrowBtn({ onClick, direction = 'left' }) {
     </button>
   );
 }
-
+const initialState = {
+  translateX: window.innerWidth < 768 ? window.innerWidth : 500,
+  current: 1,
+  transitionDuration: 0,
+};
 function Carousel({ children, autoPlay = false, arrow = false }) {
-  const [translateX, setTranslateX] = useState(
-    window.innerWidth < 768 ? window.innerWidth : 500
-  );
-  const [transitionDuration, setTransitionDuration] = useState(0);
-  const [current, setCurrent] = useState(1);
+  const [state, dispatch] = useReducer(carouselReducer, initialState);
   const containerRef = useRef();
   const startX = useRef(0);
   const endX = useRef(0);
   const intervalRef = useRef(null);
   const isDragging = useRef(false);
 
-  const updateTranslateXandCurrent = (translateX, current) => {
-    if (!containerRef.current) return;
-    setTranslateX(translateX);
-    setCurrent(current);
-  };
-
   const actionHandler = useCallback(
     (mode) => {
       if (!containerRef.current) return;
-      setTransitionDuration(400);
+      dispatch({ type: 'UPDATE_TRANSITION_DURATION', payload: 400 });
       if (mode === 'pre') {
-        if (current === 1) {
-          updateTranslateXandCurrent(0, children.length);
+        if (state.current === 1) {
+          dispatch({
+            type: 'UPDATE_CAROUSEL',
+            payload: { translateX: 0, current: children.length },
+          });
         } else {
-          updateTranslateXandCurrent(
-            containerRef.current.clientWidth * (current - 1),
-            (prev) => prev - 1
-          );
+          dispatch({
+            type: 'PREV_CAROUSEL',
+            payload: {
+              translateX:
+                containerRef.current.clientWidth * (state.current - 1),
+            },
+          });
         }
       } else {
-        if (current >= children.length) {
-          updateTranslateXandCurrent(
-            containerRef.current.clientWidth * (children.length + 1),
-            1
-          );
+        if (state.current >= children.length) {
+          dispatch({
+            type: 'UPDATE_CAROUSEL',
+            payload: {
+              translateX:
+                containerRef.current.clientWidth * (children.length + 1),
+              current: 1,
+            },
+          });
         } else {
-          updateTranslateXandCurrent(
-            containerRef.current.clientWidth * (current + 1),
-            (prev) => prev + 1
-          );
+          dispatch({
+            type: 'NEXT_CAROUSEL',
+            payload: {
+              translateX:
+                containerRef.current.clientWidth * (state.current + 1),
+            },
+          });
         }
       }
     },
-    [current, children]
+    [state, children]
   );
 
   const onDragStart = (e) => {
@@ -85,9 +93,9 @@ function Carousel({ children, autoPlay = false, arrow = false }) {
     }
     const maxDistance = 2;
     const scrolledDistance =
-      current * containerRef.current.clientWidth +
+      state.current * containerRef.current.clientWidth +
       (startX.current - endX.current) / maxDistance;
-    setTranslateX(scrolledDistance);
+    dispatch({ type: 'UPDATE_TRANSLATE_X', payload: scrolledDistance });
   };
 
   const onDragEnd = () => {
@@ -95,7 +103,10 @@ function Carousel({ children, autoPlay = false, arrow = false }) {
     const scrollDistance = Math.abs(endX.current - startX.current);
     const minDistance = 30;
     if (scrollDistance < minDistance) {
-      setTranslateX(containerRef.current.clientWidth * current);
+      dispatch({
+        type: 'UPDATE_TRANSLATE_X',
+        payload: containerRef.current.clientWidth * state.current,
+      });
       return;
     }
 
@@ -127,14 +138,16 @@ function Carousel({ children, autoPlay = false, arrow = false }) {
   useEffect(() => {
     const transitionEnd = () => {
       if (!containerRef.current) return;
-      if (current === 1 || current === children.length) {
-        setTransitionDuration(0);
+      if (state.current === 1 || state.current === children.length) {
+        dispatch({ type: 'UPDATE_TRANSITION_DURATION', payload: 0 });
         const containerWidth = containerRef.current.clientWidth;
-        setTranslateX(
-          current === 1
-            ? containerWidth * current
-            : containerWidth * children.length
-        );
+        dispatch({
+          type: 'UPDATE_TRANSLATE_X',
+          payload:
+            state.current === 1
+              ? containerWidth * state.current
+              : containerWidth * children.length,
+        });
       }
     };
 
@@ -143,7 +156,7 @@ function Carousel({ children, autoPlay = false, arrow = false }) {
     return () => {
       document.removeEventListener('transitionend', transitionEnd);
     };
-  }, [current, children]);
+  }, [state, children]);
 
   // for autoplay
   useEffect(() => {
@@ -179,8 +192,8 @@ function Carousel({ children, autoPlay = false, arrow = false }) {
         onTouchMove={onDrag}
         onTouchEnd={onDragEnd}
         style={{
-          transform: `translateX(-${translateX}px)`,
-          transitionDuration: `${transitionDuration}ms`,
+          transform: `translateX(-${state.translateX}px)`,
+          transitionDuration: `${state.transitionDuration}ms`,
         }}>
         {slides()}
       </div>
@@ -190,7 +203,7 @@ function Carousel({ children, autoPlay = false, arrow = false }) {
             <div
               key={`dot-${index}`}
               className={classNames(styles.dot, {
-                [styles.active]: index + 1 === current,
+                [styles.active]: index + 1 === state.current,
               })}
             />
           );
