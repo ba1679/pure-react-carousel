@@ -29,6 +29,11 @@ function Carousel({ children, autoPlay = false, arrow = false }) {
   const intervalRef = useRef(null);
   const isDragging = useRef(false);
 
+  const handleDragEnd = () => {
+    isDragging.current = false;
+    containerRef.current.style.cursor = 'grab';
+  };
+
   const actionHandler = useCallback(
     (mode) => {
       if (!containerRef.current) return;
@@ -68,7 +73,7 @@ function Carousel({ children, autoPlay = false, arrow = false }) {
           });
         }
       }
-      isDragging.current = false;
+      handleDragEnd();
     },
     [state, children]
   );
@@ -108,7 +113,7 @@ function Carousel({ children, autoPlay = false, arrow = false }) {
         type: 'UPDATE_TRANSLATE_X',
         payload: containerRef.current.clientWidth * state.current,
       });
-      isDragging.current = false;
+      handleDragEnd();
       return;
     }
 
@@ -117,7 +122,6 @@ function Carousel({ children, autoPlay = false, arrow = false }) {
     } else if (startX.current < endX.current) {
       actionHandler('pre');
     }
-    containerRef.current.style.cursor = 'grab';
   };
 
   const slides = () => {
