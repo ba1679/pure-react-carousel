@@ -32,6 +32,7 @@ function Carousel({ children, autoPlay = false, arrow = false }) {
   const handleDragEnd = () => {
     isDragging.current = false;
     containerRef.current.style.cursor = 'grab';
+    endX.current = 0;
   };
 
   const actionHandler = useCallback(
@@ -105,6 +106,9 @@ function Carousel({ children, autoPlay = false, arrow = false }) {
   };
 
   const onDragEnd = () => {
+    if (startX.current === endX.current || endX.current === 0) {
+      return handleDragEnd();
+    }
     if (!containerRef.current || !isDragging.current) return;
     const scrollDistance = Math.abs(endX.current - startX.current);
     const minDistance = 30;
@@ -116,7 +120,6 @@ function Carousel({ children, autoPlay = false, arrow = false }) {
       handleDragEnd();
       return;
     }
-
     if (startX.current > endX.current) {
       actionHandler('next');
     } else if (startX.current < endX.current) {
